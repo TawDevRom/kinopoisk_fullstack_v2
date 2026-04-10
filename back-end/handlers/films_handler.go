@@ -13,7 +13,7 @@ func GetFilms(w http.ResponseWriter, r *http.Request) {
 		f.film_id,
 		f.title,
 		f.is_serial,
-		COALISCE(f.description, ''),
+		COALESCE(f.description, ''),
 		t.trailer_id,
 		t.path,
 		fc.film_card_id,
@@ -26,9 +26,8 @@ func GetFilms(w http.ResponseWriter, r *http.Request) {
 	LEFT JOIN trailers t 	 ON t.trailer_id = f.trailer_id
 	LEFT JOIN film_cards fc  ON fc.film_id = f.film_id
 	LEFT JOIN logos_films lf ON lf.film_id = f.film_id
-	LEFT JOIN logos l 		 ON l.logo_id = lf.logo_id
+	LEFT JOIN logos l 		 ON l.logo_id = lf.logo_id;
 	`
-
 
 	rows, err := db.DB.Query(query)
 	if err != nil {
@@ -41,11 +40,50 @@ func GetFilms(w http.ResponseWriter, r *http.Request) {
 
 	for rows.Next() {
 		var f models.Films
-		err := rows.Scan(&f.ID, &f.Title, &f.IsSerial, &f.Description)
+		var t models.Trailer
+		var fc models.FilmCard
+		var l models.Logo
+
+		var trailerID *int
+		var trailerPath *string
+		var cardID *int
+		var cardFilmID *int
+		var cardPath *string
+		var cardIsHorizontal *bool
+		var logoID *int
+		var logoPath *string
+
+		err := rows.Scan(
+			&f.ID, &f.Title, &f.IsSerial, &f.Description,
+			&trailerID, &trailerPath,
+			&cardID, &cardFilmID, &cardPath, &cardIsHorizontal,
+			&logoID, &logoPath,
+		)
 		if err != nil {
 			log.Println("Ошибка чтения строки", err)
 			continue
 		}
+
+		if trailerID != nil {
+			t.ID = *trailerID
+			t.Path = *trailerPath
+			f.Trailer = &t
+		}
+
+		if cardID != nil {
+			fc.ID = *cardID
+			fc.FilmID = *cardFilmID
+			fc.Path = *cardPath
+			fc.IsHorizontal = *cardIsHorizontal
+			f.Card = &fc
+		}
+
+		if logoID != nil {
+			l.ID = *logoID
+			l.Path = *logoPath
+			f.Logo = &l
+		}
+
 		films = append(films, f)
 	}
 
