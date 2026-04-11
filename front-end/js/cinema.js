@@ -19,7 +19,7 @@ let counter = 0
 async function loadFilms() {
     const response = await fetch("/api/films")
     films = await response.json()
-    console.log(films)
+    console.log(films) 
 }
 
 loadFilms()

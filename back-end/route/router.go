@@ -23,4 +23,8 @@ func SetupRouter() {
 	http.HandleFunc("/watch/film/", handlers.WatchFilmPage)
 	http.HandleFunc("/cinema", handlers.CinemaPage)
 	http.HandleFunc("/api/films", handlers.GetFilms)
+
+	http.HandleFunc("/admin", handlers.AdminPage)
+	http.HandleFunc("/add", handlers.AddPage)
+	http.HandleFunc("/api/add", handlers.AddFilm)
 }

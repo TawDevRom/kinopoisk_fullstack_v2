@@ -23,7 +23,7 @@ func GetFilms(w http.ResponseWriter, r *http.Request) {
 		l.logo_id,
 		l.path
 	FROM films f
-	LEFT JOIN trailers t 	 ON t.trailer_id = f.trailer_id
+	LEFT JOIN trailers t     ON t.trailer_id = f.trailer_id
 	LEFT JOIN film_cards fc  ON fc.film_id = f.film_id
 	LEFT JOIN logos_films lf ON lf.film_id = f.film_id
 	LEFT JOIN logos l 		 ON l.logo_id = lf.logo_id;
@@ -31,7 +31,7 @@ func GetFilms(w http.ResponseWriter, r *http.Request) {
 
 	rows, err := db.DB.Query(query)
 	if err != nil {
-		log.Fatal("Ошибка запроса")
+		log.Println("Ошибка запроса")
 		return
 	}
 	defer rows.Close()
