@@ -63,6 +63,14 @@ func AddFilm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Println("Загрузили связь")
+
+	if err = tx.Commit(); err != nil {
+		http.Error(w, "error save", http.StatusInternalServerError)
+		return
+	}
+
+	defer tx.Rollback()
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]int64{"ID": int64(films.ID)})
